@@ -79,9 +79,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Languages\English\PartyStudio.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\hsbd02_00_cha_irr.dds">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

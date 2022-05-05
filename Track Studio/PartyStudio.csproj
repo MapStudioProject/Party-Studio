@@ -23,6 +23,10 @@
 	</ItemGroup>
   
 	<ItemGroup>
+	  <Content Remove="Lib\Languages\English\PartyStudio.txt" />
+	</ItemGroup>
+  
+	<ItemGroup>
 	  <None Remove="Lib\Languages\English\RevoKartLibrary.txt" />
 	</ItemGroup>
   
@@ -95,6 +99,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="cimgui.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Lib\Languages\English\PartyStudio.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Lib\Languages\English\StudioEngine.txt">
