@@ -269,7 +269,7 @@ namespace PartyStudio
         {
             try
             {
-                UpdaterHelper.Setup("MapStudioProject", "Track-Studio", "Version.txt", "TrackStudio.exe");
+                UpdaterHelper.Setup("MapStudioProject", "Party-Studio", "Version.txt", "PartyStudio.exe");
 
                 var release = UpdaterHelper.TryGetLatest(Runtime.ExecutableDir, 0);
                 if (release == null)

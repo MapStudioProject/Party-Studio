@@ -20,7 +20,7 @@ namespace Updater
                 {
                     case "-d":
                     case "--download":
-                        UpdaterHelper.Setup("MapStudioProject", "Track-Studio", "TrackStudio.exe");
+                        UpdaterHelper.Setup("MapStudioProject", "Party-Studio", "PartyStudio.exe");
                         UpdaterHelper.DownloadLatest(execDirectory, 0, force);
                         break;
                     case "-i":
