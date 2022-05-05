@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{44D3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbox.Core", "Toolbox.Core\Toolbox.Core.csproj", "{0779CE2E-B165-4DBB-B778-1E39B5645A34}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapStudio", "Track Studio\MapStudio.csproj", "{91C216DD-9F43-4B8A-B955-01A43EE2E582}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyStudio", "Track Studio\PartyStudio.csproj", "{91C216DD-9F43-4B8A-B955-01A43EE2E582}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyStudio", "Plugins\PartyStudio\PartyStudio.csproj", "{27334545-B794-4485-89F2-7D1874A57618}"
 EndProject
