@@ -8,7 +8,7 @@ using Toolbox.Core;
 using Toolbox.Core.IO;
 using System.Security.Cryptography;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class NKN
     {

@@ -8,7 +8,7 @@ using ImGuiNET;
 using GLFrameworkEngine;
 using CafeLibrary.Rendering;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class ToolWindow : IToolWindowDrawer
     {

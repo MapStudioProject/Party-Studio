@@ -11,7 +11,7 @@ using Syroot.NintenTools.NSW.Bntx;
 using Toolbox.Core;
 using OpenTK;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class MPSA : BoardLoader
     {

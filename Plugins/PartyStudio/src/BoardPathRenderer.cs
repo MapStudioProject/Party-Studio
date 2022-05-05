@@ -7,7 +7,7 @@ using GLFrameworkEngine;
 using OpenTK;
 using MapStudio.UI;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class BoardPathRenderer : RenderablePath
     {

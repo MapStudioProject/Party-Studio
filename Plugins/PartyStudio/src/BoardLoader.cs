@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     /// <summary>
     /// Represents a board for space data and path rendering.

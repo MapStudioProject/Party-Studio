@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using GLFrameworkEngine;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class Space : MapStudio.UI.IPropertyUI
     {

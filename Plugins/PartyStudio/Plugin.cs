@@ -2,7 +2,7 @@
 using Toolbox.Core;
 using MapStudio.UI;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class Plugin : IPlugin
     {

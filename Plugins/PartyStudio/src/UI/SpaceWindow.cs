@@ -7,7 +7,7 @@ using MapStudio.UI;
 using ImGuiNET;
 using UIFramework;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class SpaceWindow : DockWindow
     {

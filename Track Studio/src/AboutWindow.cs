@@ -8,7 +8,7 @@ using ImGuiNET;
 using MapStudio.UI;
 using Toolbox.Core;
 
-namespace MapStudio
+namespace PartyStudio
 {
     public class AboutWindow : Window
     {

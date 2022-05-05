@@ -11,7 +11,7 @@ using System.IO;
 using CafeLibrary.Rendering;
 using BfresLibrary;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class MPSARender : BfshaRenderer
     {

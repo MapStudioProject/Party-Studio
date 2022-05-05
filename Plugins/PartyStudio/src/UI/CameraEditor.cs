@@ -9,7 +9,7 @@ using CafeLibrary.Rendering;
 using ImGuiNET;
 using GLFrameworkEngine;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class CameraEditor : UIFramework.Window
     {

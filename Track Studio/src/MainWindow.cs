@@ -12,7 +12,7 @@ using Toolbox.Core;
 using GLFrameworkEngine;
 using ImGuiNET;
 
-namespace MapStudio
+namespace PartyStudio
 {
     public class MainWindow : UIFramework.MainWindow
     {
@@ -78,13 +78,6 @@ namespace MapStudio
             GraphicsContext.ShareContexts = true;
             //Load outlier icons to cache
             IconManager.LoadTextureFile("Node", Properties.Resources.Object, 32, 32);
-            //Load icons for map objects
-            if (Directory.Exists($"{Runtime.ExecutableDir}\\Lib\\Images\\MapObjects"))
-            {
-                foreach (var imageFile in Directory.GetFiles($"{Runtime.ExecutableDir}\\Lib\\Images\\MapObjects")) {
-                    IconManager.LoadTextureFile(imageFile, 64, 64);
-                }
-            }
             //Load recent file lists
             RecentFileHandler.LoadRecentList($"{Runtime.ExecutableDir}\\Recent.txt", RecentFiles);
             RecentFileHandler.LoadRecentList($"{Runtime.ExecutableDir}\\RecentProjects.txt", RecentProjects);

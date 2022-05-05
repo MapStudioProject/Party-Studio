@@ -7,7 +7,7 @@ using Toolbox.Core.IO;
 using CafeLibrary.Rendering;
 using BfshaLibrary;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class ShaderPack
     {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>MapStudio</RootNamespace>
+    <RootNamespace>PartyStudio</RootNamespace>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
     <SignAssembly>False</SignAssembly>
@@ -33,7 +33,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\GLFrameworkEngine\GLFrameworkEngine.csproj" />
 	  <ProjectReference Include="..\MapStudio.UI\MapStudio.UI.csproj" />
-	  <ProjectReference Include="..\Plugins\PartyStudio\PartyStudio.csproj" />
+	  <ProjectReference Include="..\Plugins\PartyStudio\PartyStudioPlugin.csproj" />
 	</ItemGroup>
   
 	<ItemGroup>

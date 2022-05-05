@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Toolbox.Core.IO;
 using Toolbox.Core;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class Zstb : ICompressionFormat
     {

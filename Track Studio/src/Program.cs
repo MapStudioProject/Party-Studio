@@ -9,7 +9,7 @@ using System.Reflection;
 using MapStudio.UI;
 using System.Linq;
 
-namespace MapStudio
+namespace PartyStudio
 {
     public class Program
     {

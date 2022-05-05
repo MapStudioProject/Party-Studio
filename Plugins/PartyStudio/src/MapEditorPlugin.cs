@@ -10,7 +10,7 @@ using OpenTK;
 using GLFrameworkEngine;
 using UIFramework;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class MapEditorPlugin : FileEditor, IFileFormat, IDisposable
     {

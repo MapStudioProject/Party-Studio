@@ -5,7 +5,7 @@ using Toolbox.Core.IO;
 using Toolbox.Core;
 using BezelEngineArchive_Lib;
 
-namespace PartyStudio
+namespace PartyStudioPlugin
 {
     public class BEA : IArchiveFile
     {
