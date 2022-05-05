@@ -171,8 +171,6 @@ namespace PartyStudioPlugin
 
         public override void OnMouseDown(MouseEventInfo mouseInfo)
         {
-            if (KeyEventInfo.State.KeyAlt)
-                PathRender.AddSinglePoint();
         }
 
         public void DrawEditMenuBar()
