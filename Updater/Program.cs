@@ -50,7 +50,7 @@ namespace Updater
             Console.WriteLine("Booting...");
 
             Thread.Sleep(3000);
-            System.Diagnostics.Process.Start(Path.Combine(execDirectory, "TrackStudioLauncher.exe"));
+            System.Diagnostics.Process.Start(Path.Combine(execDirectory, "PartyStudioLauncher.exe"));
         }
 
         static void Boot()
@@ -58,7 +58,7 @@ namespace Updater
             Console.WriteLine("Booting...");
 
             Thread.Sleep(3000);
-            System.Diagnostics.Process.Start(Path.Combine(execDirectory, "TrackStudio.exe"));
+            System.Diagnostics.Process.Start(Path.Combine(execDirectory, "PartyStudio.exe"));
         }
     }
 }
