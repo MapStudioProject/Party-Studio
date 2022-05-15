@@ -245,10 +245,13 @@ namespace PartyStudioPlugin
         {
             var modelPosData = MapArchive.FileLookup[modelHookPath];
             var csvData = MapArchive.FileLookup[csvParamPath];
+            this.PathRender.UpdateChildren();
 
             //Update children
             foreach (SpaceNode space in Spaces)
             {
+                //Update child based on renderer
+
                 space.ChildrenIDs.Clear();
                 foreach (SpaceNode child in space.Children)
                     space.ChildrenIDs.Add(child.ID);

@@ -74,6 +74,18 @@ namespace PartyStudioPlugin
             };
         }
 
+        public void UpdateChildren()
+        {
+            //Update children from the renderable points
+            foreach (BoardPathPoint point in this.PathPoints)
+            {
+                var space = point.SpaceData;
+                space.Children.Clear();
+                foreach (BoardPathPoint child in point.Children)
+                    space.Children.Add(child.SpaceData);
+            }
+        }
+
         public override void OnMouseDown(MouseEventInfo mouseInfo)
         {
             base.OnMouseDown(mouseInfo);
