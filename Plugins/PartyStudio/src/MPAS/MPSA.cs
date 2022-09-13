@@ -10,6 +10,7 @@ using GLFrameworkEngine;
 using Syroot.NintenTools.NSW.Bntx;
 using Toolbox.Core;
 using OpenTK;
+using MapStudio.UI;
 
 namespace PartyStudioPlugin
 {
@@ -90,7 +91,7 @@ namespace PartyStudioPlugin
             }
         }
 
-        public override void LoadFile(MapEditorPlugin mapEditor, Stream data, string fileName)
+        public override void LoadFile(FileEditor mapEditor, Stream data, string fileName)
         {
             LoadIcons();
 
@@ -136,7 +137,12 @@ namespace PartyStudioPlugin
 
             Dictionary<string, GenericRenderer.TextureView> textureViews = new Dictionary<string, GenericRenderer.TextureView>();
             foreach (var tex in textures)
+            {
+                if (tex.Platform.OutputFormat == TexFormat.D32_FLOAT_S8X24_UINT)
+                    continue;
+
                 textureViews.Add(tex.Name, new GenericRenderer.TextureView(tex));
+            }
 
             if (GameShaders)
             {
@@ -184,7 +190,7 @@ namespace PartyStudioPlugin
             var textures = LoadTextures(boardAssets.FileLookup["scene/hsbd00/model/obj/textures_hsbd00.bntx"].FileData);
         }
 
-        public override void SaveFile(MapEditorPlugin mapEditor, Stream data)
+        public override void SaveFile(FileEditor mapEditor, Stream data)
         {
             //Save csv params and hook data
             var id = FileName.Split('.').FirstOrDefault();
@@ -360,6 +366,7 @@ namespace PartyStudioPlugin
             var bntx = new BntxFile(stream);
             foreach (var tex in bntx.Textures)
                 textures.Add(new BntxTexture(bntx, tex));
+
             return textures;
         }
 
