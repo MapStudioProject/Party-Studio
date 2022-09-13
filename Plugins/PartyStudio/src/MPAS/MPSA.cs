@@ -91,7 +91,7 @@ namespace PartyStudioPlugin
             }
         }
 
-        public override void LoadFile(FileEditor mapEditor, Stream data, string fileName)
+        public override void LoadFile(MapEditorPlugin mapEditor, Stream data, string fileName)
         {
             LoadIcons();
 
@@ -190,7 +190,7 @@ namespace PartyStudioPlugin
             var textures = LoadTextures(boardAssets.FileLookup["scene/hsbd00/model/obj/textures_hsbd00.bntx"].FileData);
         }
 
-        public override void SaveFile(FileEditor mapEditor, Stream data)
+        public override void SaveFile(MapEditorPlugin mapEditor, Stream data)
         {
             //Save csv params and hook data
             var id = FileName.Split('.').FirstOrDefault();
