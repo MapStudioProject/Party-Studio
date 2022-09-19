@@ -25,6 +25,9 @@ namespace PartyStudioPlugin
 
         public override void Render()
         {
+            if (Board.SpaceTypeList.Count == 0)
+                return;
+
             var width = ImGui.GetWindowWidth();
             var spaces = Board.SpaceTypeList;
             var itemSize = 54;
