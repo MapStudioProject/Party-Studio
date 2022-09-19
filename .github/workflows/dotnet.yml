@@ -28,4 +28,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with: 
          name: party-studio
-         path: Track Studio
+         path: Track Studio/bin/Debug/net5.0
