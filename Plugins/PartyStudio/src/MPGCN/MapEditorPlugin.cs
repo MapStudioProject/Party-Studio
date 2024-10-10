@@ -9,13 +9,15 @@ using Toolbox.Core.ViewModels;
 using OpenTK;
 using GLFrameworkEngine;
 using UIFramework;
+using PartyStudioPlugin;
+using ImGuiNET;
 
-namespace PartyStudioPlugin
+namespace PartyStudio.GCN
 {
-    public class MapEditorPlugin : FileEditor, IFileFormat, IDisposable
+    public class GCNMapEditorPlugin : FileEditor, IFileFormat, IDisposable
     {
-        public string[] Description => new string[] { "BEA" };
-        public string[] Extension => new string[] { "*.bea"};
+        public string[] Description => new string[] { "bin" };
+        public string[] Extension => new string[] { "*.bin" };
 
         /// <summary>
         /// Whether or not the file can be saved.
@@ -27,13 +29,11 @@ namespace PartyStudioPlugin
         /// </summary>
         public File_Info FileInfo { get; set; }
 
-        public BoardLoader BoardLoader;
+        MPGCN BoardLoader;
 
         private BoardPathRenderer PathRender;
         private SpaceWindow SpaceWindow;
         private ViewportTopdown ViewportTopdown;
-
-        private CollisionFloorVisual CollisionRender;
 
         FileEditorMode EditorMode = FileEditorMode.MapEditor;
 
@@ -44,15 +44,18 @@ namespace PartyStudioPlugin
         }
 
         public bool Identify(File_Info fileInfo, Stream stream) {
-        //    return false;
+            return false;
 
-            return fileInfo.Extension == ".bea";
+            return fileInfo.Extension == ".bin";
         }
 
         public void Load(Stream stream)
         {
-            BoardLoader = new MPSA();
+            BoardLoader = new MPGCN();
             BoardLoader.LoadFile(this, stream, FileInfo.FilePath);
+
+            SpaceTableWindow window = new SpaceTableWindow(BoardLoader);
+            Workspace.Windows.Add(window);
 
             ViewportTopdown = new ViewportTopdown(this, Workspace);
 
@@ -71,16 +74,15 @@ namespace PartyStudioPlugin
         public void LoadFile(BoardLoader boardLoader)
         {
             PathRender = new BoardPathRenderer(boardLoader);
+
+            Runtime.DisplayBones = false;
+
             AddRender(PathRender);
-
-            CollisionRender = new CollisionFloorVisual();
-            AddRender(CollisionRender);
-
             Root.AddChild(PathRender.UINode);
 
-            var window = new ToolWindow();
-            window.Editor = this;
-            this.ToolWindowDrawer = window;
+           // var window = new ToolWindow();
+           // window.Editor = this;
+            //this.ToolWindowDrawer = window;
 
             SpaceWindow = new SpaceWindow(Workspace, boardLoader);
             Workspace.ViewportWindow.DrawViewportMenuBar += delegate
@@ -88,27 +90,27 @@ namespace PartyStudioPlugin
                 DrawEditMenuBar();
             };
 
-            //ReloadCollision();
+            ReloadCollision();
 
             ProcessLoading.Instance.Update(100, 100, "Finished!");
 
-         /*   var camEditor = new CameraEditor();
-            camEditor.Anims = ((MPSA)boardLoader).OpeningCameras;
-            camEditor.Opened = true;
-            Workspace.ActiveWorkspace.Windows.Add(camEditor);*/
+            /*   var camEditor = new CameraEditor();
+               camEditor.Anims = ((MPSA)boardLoader).OpeningCameras;
+               camEditor.Opened = true;
+               Workspace.ActiveWorkspace.Windows.Add(camEditor);*/
 
             Workspace.WorkspaceTools.Add(new MenuItemModel(
-          $"   {'\uf279'}    Map Editor", () =>
-          {
+            $"   {'\uf279'}    Map Editor", () =>
+            {
               EditorMode = FileEditorMode.MapEditor;
               ReloadEditorMode();
-          }));
-        /*    Workspace.WorkspaceTools.Add(new MenuItemModel(
+            }));
+            Workspace.WorkspaceTools.Add(new MenuItemModel(
                $"   {'\uf6d1'}    Model Editor", () =>
                {
                    EditorMode = FileEditorMode.ModelEditor;
                    ReloadEditorMode();
-               }));*/
+               }));
         }
 
         private void ReloadEditorMode()
@@ -122,12 +124,58 @@ namespace PartyStudioPlugin
             if (EditorMode == FileEditorMode.ModelEditor)
             {
                 PathRender.IsVisible = false;
+                foreach (var node in BoardLoader.ModelEditor.MapModels)
+                    Root.AddChild(node);
             }
+        }
+
+        public virtual void DrawViewportToolbar()
+        {
+            void DrawEditorSelection(string space, string tool_tip = "")
+            {
+                if (!IconManager.HasIcon(space))
+                    return;
+
+                bool selected = space == PartyStudioPlugin.BoardLoader.ActiveSpaceType;
+
+                var btn_color = ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg];
+                if (selected)
+                    btn_color = ImGui.GetStyle().Colors[(int)ImGuiCol.ButtonHovered];
+
+                btn_color.W = 0.8f; //adjust transparency
+
+
+                //ImGui.PushFont(ImGuiController.FontIconBig);
+                ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new System.Numerics.Vector2(0, 0.1f));
+                ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 0);
+
+                ImGui.PushStyleColor(ImGuiCol.Button, ImGui.ColorConvertFloat4ToU32(btn_color));
+
+                var pos = ImGui.GetCursorPos();
+                if (ImGui.Button($"##{space}", new System.Numerics.Vector2(28, 28)))
+                    PartyStudioPlugin.BoardLoader.ActiveSpaceType = space;
+
+                ImGui.SetCursorPos(pos);
+                IconManager.DrawIcon(space, 28);
+
+                ImGui.PopStyleColor(1);
+                ImGui.PopStyleVar(2);
+
+                if (ImGui.IsItemHovered())
+                    ImGui.SetTooltip($"{space}: {tool_tip}");
+            }
+
+            foreach (var space in BoardLoader.SpaceTypeList)
+                DrawEditorSelection(space);
         }
 
         public override void DrawToolWindow()
         {
-            ToolWindowDrawer.Render();
+            if (ImGui.SliderFloat("Bightness", ref GCNRenderLibrary.Rendering.RenderGlobals.Bightness, 0, 1))
+                GLContext.ActiveContext.UpdateViewport = true;
+
+            if (ImGui.Checkbox("X Ray Spaces", ref PathRender.XRayMode))
+                GLContext.ActiveContext.UpdateViewport = true;
         }
 
         /// <summary>
@@ -166,9 +214,6 @@ namespace PartyStudioPlugin
         /// </summary>
         public void ReloadCollision(float height = 0)
         {
-            CollisionFloorVisual.Height = height;
-            CollisionRender.Update();
-
             float size = 2000;
 
             //Make a big flat plane for placing spaces on.
@@ -184,14 +229,20 @@ namespace PartyStudioPlugin
             GLContext.ActiveContext.CollisionCaster.UpdateCache();
         }
 
+        public override void OnKeyDown(KeyEventInfo keyEventInfo, bool isRepeat)
+        {
+            GLContext context = GetActiveContext();
+
+            ViewportTopdown.OnKeyDown(keyEventInfo, isRepeat);
+        }
+
         public override void OnMouseDown(MouseEventInfo mouseInfo)
         {
         }
 
         public void DrawEditMenuBar()
         {
-            var context = GLContext.ActiveContext;
-
+            var context = GetActiveContext();
             bool changed = Workspace.ActiveWorkspace.ViewportWindow.DrawPathDropdown();
             if (changed)
             {
@@ -221,6 +272,14 @@ namespace PartyStudioPlugin
 
             if (refreshScene)
                 GLContext.ActiveContext.UpdateViewport = true;
+        }
+
+        public GLContext GetActiveContext()
+        {
+            if (ViewportTopdown.IsFocused)
+                return ViewportTopdown.Context;
+
+            return GLContext.ActiveContext;
         }
     }
 }

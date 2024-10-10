@@ -19,6 +19,7 @@ namespace PartyStudioPlugin
 
         public void Render()
         {
+            var context = GLContext.ActiveContext;
             var settings = GLContext.ActiveContext.TransformTools.TransformSettings;
             var width = ImGui.GetWindowWidth();
             bool updateViewport = false;
@@ -34,19 +35,19 @@ namespace PartyStudioPlugin
             {
                 if (ImGui.Button("Align X"))
                 {
-                    Editor.BoardLoader.PathRender.AlignAxis(0);
+                    Editor.BoardLoader.PathRender.AlignAxis(context, 0);
                     updateViewport = true;
                 }
                 ImGui.SameLine();
                 if (ImGui.Button("Align Y"))
                 {
-                    Editor.BoardLoader.PathRender.AlignAxis(1);
+                    Editor.BoardLoader.PathRender.AlignAxis(context, 1);
                     updateViewport = true;
                 }
                 ImGui.SameLine();
                 if (ImGui.Button("Align Z"))
                 {
-                    Editor.BoardLoader.PathRender.AlignAxis(2);
+                    Editor.BoardLoader.PathRender.AlignAxis(context, 2);
                     updateViewport = true;
                 }
 

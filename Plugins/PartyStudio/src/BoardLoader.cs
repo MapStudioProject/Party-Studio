@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
+using MapStudio.UI;
 
 namespace PartyStudioPlugin
 {
@@ -30,12 +31,12 @@ namespace PartyStudioPlugin
         /// </summary>
         public BoardPathRenderer PathRender;
 
-        public virtual void LoadFile(MapEditorPlugin mapEditor, Stream data, string fileName)
+        public virtual void LoadFile(FileEditor mapEditor, Stream data, string fileName)
         {
 
         }
 
-        public virtual void SaveFile(MapEditorPlugin mapEditor, Stream data)
+        public virtual void SaveFile(FileEditor mapEditor, Stream data)
         {
         }
     }

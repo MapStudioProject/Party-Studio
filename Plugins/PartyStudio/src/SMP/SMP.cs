@@ -11,12 +11,16 @@ using Syroot.NintenTools.NSW.Bntx;
 using Toolbox.Core;
 using OpenTK;
 using MapStudio.UI;
+using IONET.Collada.B_Rep.Curves;
+using FirstPlugin.BoardEditor;
 
 namespace PartyStudioPlugin
 {
-    public class MPSA : BoardLoader
+    public class SMP : BoardLoader
     {
+        //Icons to represent each space type
         static Dictionary<SpaceTypes, GLTexture> SpaceIcons = new Dictionary<SpaceTypes, GLTexture>();
+        //Color to use if no icon is present
         static Dictionary<SpaceTypes, Vector4> SpaceColors = new Dictionary<SpaceTypes, Vector4>();
 
         public List<BfresCameraAnim> OpeningCameras = new List<BfresCameraAnim>();
@@ -37,33 +41,22 @@ namespace PartyStudioPlugin
             if (SpaceIcons.Count > 0)
                 return;
 
+
             SpaceIcons.Add(SpaceTypes.PLUS, GLTexture2D.FromBitmap(Properties.Resources.Blue));
             SpaceIcons.Add(SpaceTypes.MINUS, GLTexture2D.FromBitmap(Properties.Resources.Red));
             SpaceIcons.Add(SpaceTypes.HATENA_1, GLTexture2D.FromBitmap(Properties.Resources.Event));
             SpaceIcons.Add(SpaceTypes.HATENA_2, GLTexture2D.FromBitmap(Properties.Resources.Event));
             SpaceIcons.Add(SpaceTypes.HATENA_3, GLTexture2D.FromBitmap(Properties.Resources.Event));
             SpaceIcons.Add(SpaceTypes.ITEM, GLTexture2D.FromBitmap(Properties.Resources.Item));
-            SpaceIcons.Add(SpaceTypes.KOOPA, GLTexture2D.FromBitmap(Properties.Resources.Bowser));
             SpaceIcons.Add(SpaceTypes.MARK_STAR, GLTexture2D.FromBitmap(Properties.Resources.Star));
-            SpaceIcons.Add(SpaceTypes.VS, GLTexture2D.FromBitmap(Properties.Resources.Duel));
-            SpaceIcons.Add(SpaceTypes.CHANCE, GLTexture2D.FromBitmap(Properties.Resources.Miracle_Space));
-            SpaceIcons.Add(SpaceTypes.EVENT, GLTexture2D.FromBitmap(Properties.Resources.Lucky));
-            SpaceIcons.Add(SpaceTypes.SPOT_ITEM_SHOP, GLTexture2D.FromBitmap(Properties.Resources.Shop));
-            SpaceIcons.Add(SpaceTypes.SPOT_ITEM_SHOP_MAP, GLTexture2D.FromBitmap(Properties.Resources.Shop));
+            SpaceIcons.Add(SpaceTypes.JOYCON, GLTexture2D.FromBitmap(Properties.Resources.Duel));
+            SpaceIcons.Add(SpaceTypes.LUCKY, GLTexture2D.FromBitmap(Properties.Resources.Lucky));
+            SpaceIcons.Add(SpaceTypes.LUCKY_2, GLTexture2D.FromBitmap(Properties.Resources.Lucky));
+            SpaceIcons.Add(SpaceTypes.SHOP_A, GLTexture2D.FromBitmap(Properties.Resources.Shop));
+            SpaceIcons.Add(SpaceTypes.SHOP_B, GLTexture2D.FromBitmap(Properties.Resources.Shop));
+            SpaceIcons.Add(SpaceTypes.SHOP_C, GLTexture2D.FromBitmap(Properties.Resources.Shop));
             SpaceIcons.Add(SpaceTypes.MARK_PC, GLTexture2D.FromBitmap(Properties.Resources.PlayerStart));
-            SpaceIcons.Add(SpaceTypes.BANK, GLTexture2D.FromBitmap(Properties.Resources.Bank));
             SpaceIcons.Add(SpaceTypes.START, GLTexture2D.FromBitmap(Properties.Resources.Start));
-            SpaceIcons.Add(SpaceTypes.SPOT_TERESA, GLTexture2D.FromBitmap(Properties.Resources.Teresa));
-            SpaceIcons.Add(SpaceTypes.SPOT_NOKONOKO, GLTexture2D.FromBitmap(Properties.Resources.Koopa));
-            SpaceIcons.Add(SpaceTypes.SPOT_BRANCH_KEY, GLTexture2D.FromBitmap(Properties.Resources.Key));
-            SpaceIcons.Add(SpaceTypes.SPOT_EVENT_1, GLTexture2D.FromBitmap(Properties.Resources.BoardEvent));
-            SpaceIcons.Add(SpaceTypes.SPOT_EVENT_2, GLTexture2D.FromBitmap(Properties.Resources.BoardEvent));
-            SpaceIcons.Add(SpaceTypes.SPOT_EVENT_3, GLTexture2D.FromBitmap(Properties.Resources.BoardEvent));
-            SpaceIcons.Add(SpaceTypes.SPOT_EVENT_4, GLTexture2D.FromBitmap(Properties.Resources.BoardEvent));
-            SpaceIcons.Add(SpaceTypes.SPOT_EVENT_5, GLTexture2D.FromBitmap(Properties.Resources.BoardEvent));
-            SpaceIcons.Add(SpaceTypes.SPOT_EVENT_6, GLTexture2D.FromBitmap(Properties.Resources.BoardEvent));
-
-            SpaceColors.Add(SpaceTypes.CUSTOM, new Vector4(0, 0, 0, 1));
 
             foreach (var icon in SpaceIcons)
                 MapStudio.UI.IconManager.TryAddIcon(icon.Key.ToString(), icon.Value);
@@ -71,20 +64,17 @@ namespace PartyStudioPlugin
             //Space types for toolbox view
         }
 
-        public MPSA()
+        public SMP()
         {
             //Load a list of all spaces used in the game.
             //This will be added to the tool menu for adding and selecting space types.
             foreach (SpaceTypes icon in Enum.GetValues(typeof(SpaceTypes)))
             {
                 //Skip dupe types
-                if (icon == SpaceTypes.HATENA_2 ||
+                if (icon == SpaceTypes.HATENA_1 ||
+                    icon == SpaceTypes.HATENA_2 ||
                     icon == SpaceTypes.HATENA_3 ||
-                    icon == SpaceTypes.SPOT_EVENT_2 ||
-                    icon == SpaceTypes.SPOT_EVENT_3 ||
-                    icon == SpaceTypes.SPOT_EVENT_4 ||
-                    icon == SpaceTypes.SPOT_EVENT_5 ||
-                    icon == SpaceTypes.SPOT_EVENT_6)
+                    icon == SpaceTypes.HATENA_4)
                     continue;
 
                 SpaceTypeList.Add(icon.ToString());
@@ -100,60 +90,30 @@ namespace PartyStudioPlugin
             MapArchive = new BEA();
             MapArchive.Load(data);
 
-            //Load shaders if game shaders are used 
-            if (GameShaders)
-            {
-                foreach (var file in MapArchive.FileLookup.Values)
-                {
-                    if (file.FileName.EndsWith("bnbshpk"))
-                        ShaderPack = new ShaderPack(file.FileData);
-                }
-            }
-
             var folder = Path.GetDirectoryName(fileName);
             if (File.Exists($"{folder}\\hsbd00.nx.bea"))
                 LoadBoardSpaceAssets($"{folder}\\hsbd00.nx.bea");
 
             FileName = Path.GetFileName(fileName);
             var id = FileName.Split('.').FirstOrDefault();
-            var modelHook = $"scene/{id}/model/{id}_pos.fmdb";
-            var csvParams = $"scene/{id}/data/{id}_map.nkn";
-            var texPath = $"scene/{id}/model/textures/";
-            var texBntxPath = $"scene/{id}/model/textures_{id}.bntx";
-            var envFolder = $"scene/{id}/env";
+            var modelHook = $"mainmode/{id}/model/{id}_hook_mass.fmdb";
+            var texPath = $"mainmode/{id}/model/textures/";
+            var csvParams = $"mainmode/{id}/csv/{id}_map.csv";
+            var envFolder = $"mainmode/{id}/env";
 
             LoadEnvAssets(envFolder, id);
 
             if (MapArchive.FileLookup.ContainsKey(modelHook)) {
                 var modelPosData = MapArchive.FileLookup[modelHook].FileData;
                 var csvData = MapArchive.FileLookup[csvParams].FileData;
-
-                LoadSpaceData(new ResFile(modelPosData), NKN.Decrypt(csvData));
+                LoadSpaceData(new ResFile(modelPosData), csvData);
             }
 
-            List<BntxTexture> textures = new List<BntxTexture>();
-            if (MapArchive.FileLookup.ContainsKey(texBntxPath))
-                textures = LoadTextures(MapArchive.FileLookup[texBntxPath].FileData);
-
-            Dictionary<string, GenericRenderer.TextureView> textureViews = new Dictionary<string, GenericRenderer.TextureView>();
-            foreach (var tex in textures)
-            {
-                if (tex.Platform.OutputFormat == TexFormat.D32_FLOAT_S8X24_UINT)
-                    continue;
-
-                textureViews.Add(tex.Name, new GenericRenderer.TextureView(tex));
-            }
-
-            if (GameShaders)
-            {
-                BfresLoader.GlobalShaders.Clear();
-                BfresLoader.GlobalShaders.AddRange(this.ShaderPack.Shaders.Values.ToList());
-                BfresLoader.TargetShader = typeof(MPSARender);
-            }
+            var textureViews = GetTextures(); 
 
             foreach (var file in MapArchive.FileLookup)
             {
-                if (!file.Key.StartsWith($"scene/{id}/model/{id}_bg") || !file.Key.EndsWith(".fmdb"))
+                if (!file.Key.StartsWith($"mainmode/{id}/model/{id}_bg") || !file.Key.EndsWith(".fmdb"))
                     continue;
 
                 var mem = file.Value.FileData;
@@ -165,6 +125,35 @@ namespace PartyStudioPlugin
 
                 render.Textures = textureViews;
             }
+        }
+
+        Dictionary<string, GenericRenderer.TextureView> GetTextures()
+        {
+            Dictionary<string, GenericRenderer.TextureView> textureViews = new Dictionary<string, GenericRenderer.TextureView>();
+
+            foreach (var file in MapArchive.FileLookup.Values)
+            {
+                if (file.FileName.EndsWith("ftxb")) {
+                    foreach (var tex in LoadTextures(file.FileData))
+                    {
+                        if (tex.Platform.OutputFormat == TexFormat.D32_FLOAT_S8X24_UINT)
+                            continue;
+
+                        textureViews.Add(tex.Name, new GenericRenderer.TextureView(tex));
+                    }
+                }
+            }
+            return textureViews;
+        }
+
+        static List<BntxTexture> LoadTextures(Stream stream)
+        {
+            List<BntxTexture> textures = new List<BntxTexture>();
+            var bntx = new BntxFile(stream);
+            foreach (var tex in bntx.Textures)
+                textures.Add(new BntxTexture(bntx, tex));
+
+            return textures;
         }
 
         private void LoadEnvAssets(string folder, string id)
@@ -205,7 +194,7 @@ namespace PartyStudioPlugin
             MapArchive.Save(data);
         }
 
-        private void LoadSpaceData(ResFile resFile, string csvParams)
+        private void LoadSpaceData(ResFile resFile, Stream csvParams)
         {
             SpacePosData = resFile;
             //Assign csv data
@@ -214,14 +203,14 @@ namespace PartyStudioPlugin
             foreach (var model in resFile.Models.Values) {
                 foreach (var bone in model.Skeleton.Bones.Values) {
                     //Only use pos### used for placement objects
-                    if (!int.TryParse(bone.Name.Replace("pos", ""), out int id))
+                    if (!int.TryParse(bone.Name.Replace("hook_", ""), out int id))
                         continue;
 
                     var space = FindSpaceFromBoneKey(bone.Name);
                     //If no space found, then it is used as a custom placement for NPC, star host, model, etc
                     if (space == null)
                     {
-                        space = new SpaceNode(this, SpaceTypes.CUSTOM);
+                        space = new SpaceNode(this, SpaceTypes.BRANCH);
                         space.ID = id;
                         space.UpdateHeader();
                         Spaces.Add(space);
@@ -232,18 +221,6 @@ namespace PartyStudioPlugin
                                             bone.Rotation.X, bone.Rotation.Y, bone.Rotation.Z);
                     space.Scale = new OpenTK.Vector3(
                                            bone.Scale.X, bone.Scale.Y, bone.Scale.Z);
-                }
-            }
-
-            //Prepare links
-            foreach (SpaceNode space in Spaces)
-            {
-                if (!string.IsNullOrEmpty(space.LinkedSpace))
-                {
-                    var linked = (SpaceNode)Spaces.FirstOrDefault(x => ((SpaceNode)x).ID.ToString() == space.LinkedSpace);
-                    linked.SourceLink = space;
-                    space.DestLink = space;
-                    space.UpdateHeader();
                 }
             }
         }
@@ -327,8 +304,8 @@ namespace PartyStudioPlugin
             {
                 writer.WriteLine(",,,,,,,,,,,,,,");
                 foreach (SpaceNode space in Spaces) {
-                    if (space.SpaceType == SpaceTypes.CUSTOM)
-                        continue;
+                   // if (space.SpaceType == SpaceTypes.CUSTOM)
+                    //    continue;
 
                     string line = string.Join(',', space.GetParams());
                     writer.WriteLine(line);
@@ -338,18 +315,23 @@ namespace PartyStudioPlugin
             }
         }
 
-        private void ReadCsvBoardParams(string csvParams)
+        private void ReadCsvBoardParams(Stream stream)
         {
-            foreach (var line in csvParams.Split('\n', '\r'))
+            using (var reader = new StreamReader(stream))
             {
-                if (line.StartsWith(","))
-                    continue;
+                //Skip first line
+                reader.ReadLine();
 
-                Console.WriteLine(line);
+                while (!reader.EndOfStream)
+                {
+                    string line = reader.ReadLine();
+                    Console.WriteLine(line);
 
-                if (line.Split(",").Length > 4)
-                    Spaces.Add(new SpaceNode(this, line));
+                    if (line.Split(",").Length > 4)
+                        Spaces.Add(new SpaceNode(this, line));
+                }
             }
+
             //Handle children
             foreach (SpaceNode space in Spaces) {
                 foreach (var childID in space.ChildrenIDs) {
@@ -360,22 +342,12 @@ namespace PartyStudioPlugin
             }
         }
 
-        private List<BntxTexture> LoadTextures(Stream stream)
-        {
-            List<BntxTexture> textures = new List<BntxTexture>();
-            var bntx = new BntxFile(stream);
-            foreach (var tex in bntx.Textures)
-                textures.Add(new BntxTexture(bntx, tex));
-
-            return textures;
-        }
-
         private SpaceNode FindSpaceFromBoneKey(string name)
         {
-            if (!name.StartsWith("pos"))
+            if (!name.StartsWith("hook_"))
                 return null;
 
-            var id = name.Replace("pos", "");
+            var id = name.Replace("hook_", "");
             foreach (SpaceNode space in this.Spaces)
             {
                 if (space.ID.ToString().PadLeft(3, '0') == id)
@@ -405,14 +377,14 @@ namespace PartyStudioPlugin
             {
                 get {
                     if (string.IsNullOrEmpty(typeID))
-                        return SpaceTypes.EMPTY;    
+                        return SpaceTypes.BRANCH;    
                     
                     return (SpaceTypes)Enum.Parse(typeof(SpaceTypes), typeID); }
                 set {
 
                     GLContext.ActiveContext.Scene.AddToUndo(new UndoableProperty(this, "TypeID", typeID, value));
 
-                    if (value == SpaceTypes.EMPTY)
+                    if (value == SpaceTypes.BRANCH)
                         TypeID = "";
                     else
                         TypeID = value.ToString();
@@ -422,10 +394,15 @@ namespace PartyStudioPlugin
             public string TypeID
             {
                 get {
+                    return typeID;
+
+                    if (typeID == null) return "";
+
                     if (string.IsNullOrEmpty(typeID))
                         return MapStudio.UI.TranslationSource.GetText("EMPTY");
 
-                    return MapStudio.UI.TranslationSource.GetText(typeID); }
+                    return MapStudio.UI.TranslationSource.GetText(typeID);
+                }
                 set
                 {
                     typeID = value;
@@ -435,83 +412,17 @@ namespace PartyStudioPlugin
             }
             private string typeID;
 
-            [BindGUI("Linked Space")]
-            public string LinkedSpace
-            {
-                get { return Properties[0]; }
-                set { Properties[0] = value; }
-            }
-
-            [BindGUI("Param 2")]
-            public string Param2
-            {
-                get { return Properties[1]; }
-                set { Properties[1] = value; }
-            }
-
-            [BindGUI("Param 3")]
-            public string Param3
-            {
-                get { return Properties[2]; }
-                set { Properties[2] = value; }
-            }
-
-            [BindGUI("Param 4")]
-            public string Param4
-            {
-                get { return Properties[3]; }
-                set { Properties[3] = value; }
-            }
-
-            [BindGUI("Param 5")]
-            public string Param5
-            {
-                get { return Properties[4]; }
-                set { Properties[4] = value; }
-            }
-
-            [BindGUI("Param 6")]
-            public string Param6
-            {
-                get { return Properties[5]; }
-                set { Properties[5] = value; }
-            }
-
-            [BindGUI("Param 7")]
-            public string Param7
-            {
-                get { return Properties[6]; }
-                set { Properties[6] = value; }
-            }
-
-            [BindGUI("Param 8")]
-            public string Param8
-            {
-                get { return Properties[7]; }
-                set { Properties[7] = value; }
-            }
-
-            [BindGUI("Param 9")]
-            public string Param9
-            {
-                get { return Properties[8]; }
-                set { Properties[8] = value; }
-            }
-
-            public SpaceNode SourceLink { get; set; }
-            public SpaceNode DestLink { get; set; }
+            public string Attribute1 { get; set; }
+            public string Attribute2 { get; set; }
 
             public List<int> ChildrenIDs = new List<int>();
-            public string[] Properties = new string[9];
 
             public override Space Copy()
             {
                 var board = ((BoardPathRenderer)this.PathPoint.ParentPath).BoardLoader;
                 var space = new SpaceNode(board, this.SpaceType);
-
-                space.Properties = new string[Properties.Length];
-                for (int i = 0; i < Properties.Length; i++)
-                    space.Properties[i] = Properties[i];
+                space.Attribute1 = this.Attribute1;
+                space.Attribute2 = this.Attribute2;
 
                 return space;
             }
@@ -523,30 +434,11 @@ namespace PartyStudioPlugin
                 Icon = "";
                 if (MapStudio.UI.IconManager.HasIcon(SpaceType.ToString()))
                     Icon = SpaceType.ToString();
-
-                if (SourceLink != null)
-                    SetupLinkType(SourceLink);
-            }
-
-            private void SetupLinkType(SpaceNode linkedSpace)
-            {
-                if (linkedSpace.SpaceType == SpaceTypes.MARK_STAR)
-                    this.Name = $"{ID.ToString().PadLeft(3, '0')}_STAR_HOST";
-                if (linkedSpace.SpaceType == SpaceTypes.SPOT_ITEM_SHOP)
-                    this.Name = $"{ID.ToString().PadLeft(3, '0')}_SHOP_MODEL";
-                if (linkedSpace.SpaceType == SpaceTypes.SPOT_KOOPA)
-                    this.Name = $"{ID.ToString().PadLeft(3, '0')}_BOWSER_MODEL";
-                if (linkedSpace.SpaceType == SpaceTypes.SPOT_TERESA)
-                    this.Name = $"{ID.ToString().PadLeft(3, '0')}_BOO_MODEL";
-                if (linkedSpace.SpaceType == SpaceTypes.SPOT_BRANCH_KEY)
-                    this.Name = $"{ID.ToString().PadLeft(3, '0')}_KEYGATE_MODEL";
-                if (linkedSpace.SpaceType == SpaceTypes.BANK)
-                    this.Name = $"{ID.ToString().PadLeft(3, '0')}_BANK_MODEL";
             }
 
             public string[] GetParams()
             {
-                string[] parameters = new string[Properties.Length + 6];
+                string[] parameters = new string[8];
                 //Space ID
                 parameters[0] = ID.ToString();
 
@@ -557,8 +449,8 @@ namespace PartyStudioPlugin
                 //Type ID
                 parameters[5] = typeID;
                 //Properties
-                for (int i = 0; i < Properties.Length; i++)
-                    parameters[i + 6] = Properties[i];
+                parameters[6] = Attribute1;
+                parameters[7] = Attribute2;
 
                 return parameters;
             }
@@ -611,20 +503,6 @@ namespace PartyStudioPlugin
             public override void DrawUI()
             {
                 return;
-
-                ImGuiNET.ImGui.Columns(2);
-                for (int i = 0; i < Properties.Length; i++)
-                {
-                    ImGuiNET.ImGui.Text($"Property {i}");
-                    ImGuiNET.ImGui.NextColumn();
-
-                    string prop = Properties[i];
-                    if (ImGuiNET.ImGui.InputText($"##prop{i}", ref prop, 0x100))
-                        Properties[i] = prop;
-
-                    ImGuiNET.ImGui.NextColumn();
-                }
-                ImGuiNET.ImGui.Columns(1);
             }
 
             private void ParseEntry(string line)
@@ -635,12 +513,11 @@ namespace PartyStudioPlugin
                 {
                     var index = values[1 + i];
                     if (index != string.Empty)
-                        ChildrenIDs.Add(int.Parse(values[1 + i]));
+                        ChildrenIDs.Add(ushort.Parse(index));
                 }
                 TypeID = values[5];
-                //Totals to 9 properties
-                for (int i = 6; i < values.Length; i++)
-                    Properties[i - 6] = values[i];
+                Attribute1 = values[6];
+                Attribute2 = values[7];
 
                 UpdateHeader();
             }
@@ -648,35 +525,46 @@ namespace PartyStudioPlugin
 
         public enum SpaceTypes
         {
-            EMPTY,
-            CUSTOM,
-            START,
             PLUS,
             MINUS,
-            ITEM,
-            BANK,
-            EVENT,
-            CHANCE,
-            VS,
-            KOOPA,
-            MARK_PC,
-            MARK_STAR,
+            LUCKY,
+            LUCKY_2,
+            DONT_ENTRY,
             HATENA_1,
             HATENA_2,
             HATENA_3,
-            SPOT_BRANCH,
-            SPOT_BRANCH_KEY,
-            SPOT_NOKONOKO,
-            SPOT_KOOPA,
-            SPOT_ITEM_SHOP,
-            SPOT_ITEM_SHOP_MAP,
-            SPOT_EVENT_1,
-            SPOT_EVENT_2,
-            SPOT_EVENT_3,
-            SPOT_EVENT_4,
-            SPOT_EVENT_5,
-            SPOT_EVENT_6,
-            SPOT_TERESA,
+            HATENA_4,
+            START,
+            MARK_PC,
+            MARK_STAR,
+            MARK_STAROBJ,
+            SUPPORT,
+            HAPPENING,
+            ITEM,
+            BATTAN,
+            DOSSUN,
+            JUGEMU_OBJ,
+            JUGEMU,
+            JOYCON,
+            TREASURE_OBJ,
+            SHOP_OBJ,
+            SHOP_A,
+            SHOP_B,
+            SHOP_C,
+            HARD_SHOP,
+            ICECREAM_SHOP,
+            CLAYPIPE,
+            CLAYPIPE_RED,
+            PRESENT_BOX,
+            PRESENT_BOX_OBJ,
+            TURNOUT_SWITCH,
+            NPC_BOMBHEI,
+            PATAPATA,
+            PATAPATA_OBJ,
+            SIGNBOARD_PATAPATA,
+            SIGNBOARD_JUGEMU,
+            SIGNBOARD_SHOP,
+            BRANCH,
         }
     }
 }

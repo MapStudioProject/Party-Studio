@@ -36,7 +36,12 @@ namespace PartyStudioPlugin
             LineColor = new Vector4(1, 1, 0, 1);
             IsArrowCentered = true;
             LineWidth = 2;
-            PointSize = 0.3f;
+            PointSize = 0.25f;
+            ArrowScale = 10f;
+            ScaleByCamera = false;
+
+            //smp todo
+            ArrowScale = 0.1f;
 
             SegmentDrawPointLength = 20;
 
@@ -86,26 +91,26 @@ namespace PartyStudioPlugin
             }
         }
 
-        public override void OnMouseDown(MouseEventInfo mouseInfo)
+        public override void OnMouseDown(GLContext context, MouseEventInfo mouseInfo)
         {
-            base.OnMouseDown(mouseInfo);
+            base.OnMouseDown(context, mouseInfo);
         }
 
-        public override void OnKeyDown(KeyEventInfo keyInfo)
+        public override void OnKeyDown(GLContext context, KeyEventInfo keyInfo)
         {
-            base.OnKeyDown(keyInfo);
+            base.OnKeyDown(context, keyInfo);
             if (keyInfo.IsKeyDown(InputSettings.INPUT.Scene.Create))
             {
                 var selected = GetSelectedPoints().FirstOrDefault();
 
-                GLContext.ActiveContext.Scene.BeginUndoCollection();
-                var pt = (BoardPathPoint)AddSinglePoint();
+                context.Scene.BeginUndoCollection();
+                var pt = (BoardPathPoint)AddSinglePoint(context);
                 if (selected != null && !KeyEventInfo.State.KeyCtrl)
                     selected.AddChild(pt);
-                GLContext.ActiveContext.Scene.EndUndoCollection();
+                context.Scene.EndUndoCollection();
             }
             if (keyInfo.IsKeyDown(InputSettings.INPUT.Scene.Dupe))
-                this.DuplicateSelected();
+                this.DuplicateSelected(context);
         }
 
         public override RenderablePathPoint CreatePoint(Vector3 position) {

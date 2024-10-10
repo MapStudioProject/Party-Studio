@@ -8,3 +8,7 @@
 	path = Toolbox.Core
 	url = https://github.com/KillzXGaming/Toolbox.Core
 	branch = map-studio
+[submodule "MPLibrary"]
+	path = MPLibrary
+	url = https://github.com/KillzXGaming/MPLibrary.git
+	branch = master

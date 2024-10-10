@@ -162,17 +162,16 @@ namespace PartyStudioPlugin
 
         public void SetRenderTargetBlock(UniformBlock block)
         {
-            block.Buffer.Clear();
-            block.Add(new Vector4(1152.00f, 648.00f, 0.00087f, 0.00154f));
-            block.Add(new Vector4(1152.00f, 648.00f, 0.00087f, 0.00155f));
-            block.Add(new Vector4(1.00893E-43f, 5.74532E-44f, 4.13663E-42f, 0.00f));
+            block.BufferCreator.Clear();
+            block.BufferCreator.Add(new Vector4(1152.00f, 648.00f, 0.00087f, 0.00154f));
+            block.BufferCreator.Add(new Vector4(1152.00f, 648.00f, 0.00087f, 0.00155f));
+            block.BufferCreator.Add(new Vector4(1.00893E-43f, 5.74532E-44f, 4.13663E-42f, 0.00f));
+            block.UpdateBufferCreatorData();
         }
 
         public void SetModelBlock(UniformBlock block)
         {
             Matrix4 transform = Matrix4.Identity;
-
-            block.Buffer.Clear();
 
             //Fill the buffer by program offsets
             var mem = new System.IO.MemoryStream();
@@ -184,15 +183,11 @@ namespace PartyStudioPlugin
               //  writer.SeekBegin(18 * 16);
                // writer.Write(new Vector4(0, 0, 1, 1));
             }
-
-            block.Buffer.Clear();
-            block.Buffer.AddRange(mem.ToArray());
+            block.SetData(mem.ToArray());
         }
 
         private void SetEnvUniforms(UniformBlock block)
         {
-            block.Buffer.Clear();
-
             //Fill the buffer by program offsets
             var mem = new System.IO.MemoryStream();
             using (var writer = new Toolbox.Core.IO.FileWriter(mem))
@@ -212,19 +207,19 @@ namespace PartyStudioPlugin
                 writer.Write(new Vector4(0.01351f, 10000, 1.00f, 1.00f));*/
             }
 
-            block.Buffer.Clear();
-            block.Buffer.AddRange(mem.ToArray());
+            block.SetData(mem.ToArray());
         }
 
         public override void SetShapeBlock(BfresMeshRender mesh, Matrix4 transform, UniformBlock block)
         {
             int numSkinning = (int)mesh.VertexSkinCount;
 
-            block.Buffer.Clear();
-            block.Add(transform.Column0);
-            block.Add(transform.Column1);
-            block.Add(transform.Column2);
-            block.AddInt(numSkinning);
+            block.BufferCreator.Buffer.Clear();
+            block.BufferCreator.Add(transform.Column0);
+            block.BufferCreator.Add(transform.Column1);
+            block.BufferCreator.Add(transform.Column2);
+            block.BufferCreator.AddInt(numSkinning);
+            block.UpdateBufferCreatorData();
         }
 
         public override void LoadBindlessTextures(GLContext control, ShaderProgram shader, ref int id)
@@ -308,9 +303,7 @@ namespace PartyStudioPlugin
                 writer.Write(camera.InverseRotationMatrix.Row2);
                // writer.Write(new Vector4(0, -0.62f, -0.76f, 0));
             }
-
-            block.Buffer.Clear();
-            block.Buffer.AddRange(mem.ToArray());
+            block.SetData(mem.ToArray());
         }
 
         public override GLTexture GetExternalTexture(GLContext control, string sampler)

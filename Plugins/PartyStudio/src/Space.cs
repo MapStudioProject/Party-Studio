@@ -37,7 +37,7 @@ namespace PartyStudioPlugin
         public BoardPathPoint PathPoint;
 
         public StandardMaterial Material = new StandardMaterial();
-        static PlaneRenderer SpaceDrawer;
+        internal static PlaneRenderer SpaceDrawer;
 
         public Space() {
             Material.Color = new Vector4(1, 1, 1, 1.0f);
@@ -57,6 +57,11 @@ namespace PartyStudioPlugin
         }
 
         public virtual void DrawUI()
+        {
+
+        }
+
+        public virtual void DrawTableUI()
         {
 
         }
@@ -87,11 +92,13 @@ namespace PartyStudioPlugin
             Material.ModelMatrix = (baseScale * rot * offset) * PathPoint.Transform.TransformMatrix;
 
             GLMaterialBlendState.Translucent.RenderBlendState();
+            GLMaterialBlendState.Translucent.RenderDepthTest();
 
             Material.Render(context);
             SpaceDrawer.DrawWithSelection(context, PathPoint.IsSelected);
 
             GLMaterialBlendState.Opaque.RenderBlendState();
+            GLMaterialBlendState.Opaque.RenderDepthTest();
         }
     }
 }

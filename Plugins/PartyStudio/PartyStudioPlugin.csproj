@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,17 +11,19 @@
   <ItemGroup>
     <ProjectReference Include="..\..\GLFrameworkEngine\GLFrameworkEngine.csproj" />
     <ProjectReference Include="..\..\MapStudio.UI\MapStudio.UI.csproj" />
+    <ProjectReference Include="..\..\MPLibrary\MPLibrary\MPLibrary.csproj" />
+    <ProjectReference Include="..\..\Toolbox.Core\Toolbox.Core.csproj" />
   </ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<OutputPath>..\..\Track Studio\bin\Debug\net5.0\plugins\</OutputPath>
+		<OutputPath>..\..\Track Studio\bin\Debug\net6.0\plugins\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>false</Optimize>
-		<OutputPath>..\..\Track Studio\bin\Release\net5.0\plugins\</OutputPath>
+		<OutputPath>..\..\Track Studio\bin\Release\net6.0\plugins\</OutputPath>
 	</PropertyGroup>
 	
   <ItemGroup>
@@ -37,8 +39,14 @@
     <Reference Include="CafeLibrary">
       <HintPath>..\..\Track Studio\Lib\CafeLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="GCNRenderLibrary">
+      <HintPath>..\..\Track Studio\Lib\GCNRenderLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="ImGui.NET">
       <HintPath>..\..\Track Studio\Lib\ImGui.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="IONET">
+      <HintPath>..\..\Track Studio\Lib\IONET.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\MapStudio\Lib\Newtonsoft.Json.dll</HintPath>
