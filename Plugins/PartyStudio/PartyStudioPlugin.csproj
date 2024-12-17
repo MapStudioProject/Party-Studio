@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GLFrameworkEngine\GLFrameworkEngine.csproj" />
+    <ProjectReference Include="..\..\IONET\IONET\IONET.csproj" />
     <ProjectReference Include="..\..\MapStudio.UI\MapStudio.UI.csproj" />
     <ProjectReference Include="..\..\MPLibrary\MPLibrary\MPLibrary.csproj" />
     <ProjectReference Include="..\..\Toolbox.Core\Toolbox.Core.csproj" />
@@ -44,9 +45,6 @@
     </Reference>
     <Reference Include="ImGui.NET">
       <HintPath>..\..\Track Studio\Lib\ImGui.NET.dll</HintPath>
-    </Reference>
-    <Reference Include="IONET">
-      <HintPath>..\..\Track Studio\Lib\IONET.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\MapStudio\Lib\Newtonsoft.Json.dll</HintPath>

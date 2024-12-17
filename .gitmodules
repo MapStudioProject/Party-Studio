@@ -1,3 +1,6 @@
+[submodule "IONET"]
+	path = IONET
+	url = https://github.com/KillzXGaming/IONET.git
 [submodule "GLFrameworkEngine"]
 	path = GLFrameworkEngine
 	url = https://github.com/MapStudioProject/GLFrameworkEngine
