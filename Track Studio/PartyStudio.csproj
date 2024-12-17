@@ -36,7 +36,6 @@
 	</ItemGroup>
   
 	<ItemGroup>
-	  <ProjectReference Include="..\GCNRenderLibrary\GCNRenderLibrary.csproj" />
 	  <ProjectReference Include="..\GLFrameworkEngine\GLFrameworkEngine.csproj" />
 	  <ProjectReference Include="..\MapStudio.UI\MapStudio.UI.csproj" />
 	  <ProjectReference Include="..\Plugins\PartyStudio\PartyStudioPlugin.csproj" />
